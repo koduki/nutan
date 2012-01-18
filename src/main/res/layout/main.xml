@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hello" />
+
+    <TextView
+        android:id="@+id/wordLabel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Word"
+        android:textSize="64sp" />
+
+    <RadioGroup
+        android:id="@+id/answerRadioGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <RadioButton
+        android:id="@+id/answer01"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="48sp" 
+            android:text="Select1" />
+
+        <RadioButton
+        android:id="@+id/answer02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="48sp" 
+            android:text="Select2" />
+
+        <RadioButton
+        android:id="@+id/answer03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="48sp" 
+            android:text="Select3" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/answerCheckBtn"
+        android:layout_width="86dp"
+        android:layout_height="wrap_content"
+        android:text="@string/answerBtnLabel" />
+
+</LinearLayout>

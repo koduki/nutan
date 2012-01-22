@@ -12,13 +12,35 @@ import android.content.DialogInterface;
 import cn.orz.pascal.nutan.model._
 import scala.util._
 
+import android.view.Menu
+import android.view.MenuItem
+import android.content.Intent
+
 class MainActivity extends Activity {
   val words = List(
-    Word("cat", "猫"),
-    Word("dog", "犬"),
-    Word("run", "走る"), 
-    Word("look", "見る"), 
-    Word("consider", "を熟考する"))
+    Word("complicated", "複雑な、分かりにくい"),
+    Word("look up A", "Aを調べる"),
+    Word("confess A", "Aを人に告白する"),
+    Word("enter A", "Aを入力する"),
+    Word("location", "位置、所在地"),
+    Word("destination", "目的地"),
+    Word("mobile phone", "携帯電話"),
+    Word("relatively", "比較的"),
+    Word("drive", "車を運転する"),
+    Word("territory", "領域"),
+    Word("predict", "予期する"),
+    Word("happen to A", "AをたまたまAをする"),
+    Word("stance", "立場"),
+    Word("coincidence", "偶然の一致"),
+    Word("logical", "論理的な"),
+    Word("ridiculous", "ばかげた"),
+    Word("valid", "理にかなった"),
+    Word("philosophy", "哲学"))
+
+  val MENU_ID_MENU1 = (Menu.FIRST + 1);
+  val MENU_ID_MENU2 = (Menu.FIRST + 2);
+
+  var visible = true
 
   implicit def func2OnClickListener(func: (View) => Any) = {
     new View.OnClickListener() {
@@ -87,4 +109,37 @@ class MainActivity extends Activity {
 
   }
 
+  // オプションメニューが最初に呼び出される時に1度だけ呼び出されます
+  override def onCreateOptionsMenu(menu: Menu): Boolean = {
+    // メニューアイテムを追加します
+    menu.add(Menu.NONE, MENU_ID_MENU1, Menu.NONE, "Input");
+    menu.add(Menu.NONE, MENU_ID_MENU2, Menu.NONE, "Menu2");
+
+    super.onCreateOptionsMenu(menu);
+  }
+
+  // オプションメニューが表示される度に呼び出されます
+  override def onPrepareOptionsMenu(menu: Menu) = {
+    menu.findItem(MENU_ID_MENU2).setVisible(visible);
+    visible = !visible;
+
+    super.onPrepareOptionsMenu(menu);
+  }
+
+  override def onOptionsItemSelected(item: MenuItem) = {
+    item.getItemId() match {
+      case MENU_ID_MENU1 => {
+        //次の画面に遷移させる
+        val intent = new Intent();
+        intent.setClassName(
+          "cn.orz.pascal.nutan",
+          "cn.orz.pascal.nutan.WordInputActivity");
+        startActivity(intent);
+        true
+      }
+      case MENU_ID_MENU2 => true
+      case _ => super.onOptionsItemSelected(item);
+    }
+
+  }
 }

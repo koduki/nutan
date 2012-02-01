@@ -10,7 +10,11 @@ import android.view.View
 import android.app.AlertDialog
 import android.content.DialogInterface;
 import cn.orz.pascal.nutan.model._
+import cn.orz.pascal.nutan.persistance._
 import scala.util._
+
+import android.database.sqlite._
+import android.database._
 
 import android.view.Menu
 import android.view.MenuItem
@@ -84,6 +88,14 @@ class MainActivity extends Activity {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
     nextProblem
+    val helper = new DatabaseOpenHelper(this)
+    try{
+    val db = helper.getReadableDatabase()
+    val c = db.query("test1", Array("name"), null, null, null, null, null);
+    c.moveToFirst();
+    }catch{
+        case e:Exception => println(e.toString)
+  }
 
     answerCheckBtn.setOnClickListener { (v: View) =>
       val radioGroup = $[RadioGroup](R.id.answerRadioGroup)
@@ -130,10 +142,7 @@ class MainActivity extends Activity {
     item.getItemId() match {
       case MENU_ID_MENU1 => {
         //次の画面に遷移させる
-        val intent = new Intent();
-        intent.setClassName(
-          "cn.orz.pascal.nutan",
-          "cn.orz.pascal.nutan.WordInputActivity");
+        val intent = new Intent(this, classOf[WordInputActivity]);
         startActivity(intent);
         true
       }

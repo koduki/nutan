@@ -89,22 +89,85 @@ class MainActivity extends Activity {
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
+    def record(english: String, japanese: String, partOfSpeech: String, example: String) = {
+
+      case class Word2(id: Int, english: String, japanese: String, partOfSpeech: String, example: String) {
+        def f() {}
+      };
+    }
+
     val helper = new DatabaseOpenHelper(this)
     try {
       val db = helper.getReadableDatabase()
       val c = db.query("word", null, null, null, null, null, null);
+
+      val xs = new Iterator[Word] {
+        var _hasNext = c.moveToFirst()
+        var s = 1
+        def hasNext: Boolean = this._hasNext
+        def next: Word = {
+          def set(target: Any, name: String, value: Any) = {
+            val f = target.getClass().getDeclaredField(name)
+            f.setAccessible(true)
+
+            f.set(target, value)
+          }
+
+          def get[T](cursor: Cursor, name: String, classType: Class[T]): java.lang.Object = {
+            (classType match {
+              case x: Class[String] => cursor.getString(cursor.getColumnIndex(name))
+              case x: Class[Int] => cursor.getInt(cursor.getColumnIndex(name))
+            }).asInstanceOf[java.lang.Object]
+          }
+
+          def bindObject[T](cls: Class[T]): T = {
+            val fields = cls.getDeclaredFields.map(x => (x.getName, x.getType, get(c, x.getName, x.getType)))
+
+            val names = fields.map(_._1)
+            val types = fields.map(_._2)
+            val values = fields.map(_._3)
+            val result = cls.getConstructor(types: _*).newInstance(values: _*)
+
+            for (f <- fields) {
+            println("+++++++++==")
+            println("+++++++++==")
+            println("+++++++++==")
+            println(f._1)
+            println("+++++++++==")
+            println("+++++++++==")
+            println("+++++++++==")
+              f match {
+                case x: (String, Int, Int) => set(result, x._1, x._3)
+                case x: (String, String, String) => set(result, x._1, x._3)
+              }
+            }
+            result
+          }
+          
+          val result = bindObject(classOf[Word])
+          this._hasNext = c.moveToNext()
+          println(result)
+          result
+        }
+      }
+
       c.moveToFirst();
 
-      val w1 = Word(c.getString(1), c.getString(2))
-      c.moveToNext()
-      val w2 = Word(c.getString(1), c.getString(2))
-      c.moveToNext()
-      val w3 = Word(c.getString(1), c.getString(2))
+      //      val w1 = Word(get(c, "english", classOf[String]), get(c, "japanese", classOf[String]))
+      //
+      //      c.moveToNext()
+      //      val w2 = Word(get(c, "english", classOf[String]), get(c, "japanese", classOf[String]))
+      //      c.moveToNext()
+      //      val w3 = Word(get(c, "english", classOf[String]), get(c, "japanese", classOf[String]))
 
-      wordsdb = List(w1, w2, w3)
+        wordsdb = xs.toList //List(w1, w2, w3)
+//      wordsdb = List(w1, w2, w3)
       println(wordsdb)
 
       c.close
+
+      //val dbm = new DBManager()
+      //val words = dbm.from[Word].gets
 
     } catch {
       case e: Exception => println(e.toString)

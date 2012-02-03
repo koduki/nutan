@@ -21,6 +21,8 @@ import android.view.MenuItem
 import android.content.Intent
 
 class MainActivity extends Activity {
+  var wordsdb: List[Word] = null
+
   val words = List(
     Word("complicated", "複雑な、分かりにくい"),
     Word("look up A", "Aを調べる"),
@@ -75,7 +77,7 @@ class MainActivity extends Activity {
   var answer: Word = null
 
   def nextProblem() {
-    val problems = pickup(words, 3)
+    val problems = pickup(wordsdb, 3)
     this.answer = problems(pickup(List(0, 1, 2)))
     label.setText(answer.japanese)
     answer01.setText(problems(0).english)
@@ -87,16 +89,28 @@ class MainActivity extends Activity {
   override def onCreate(savedInstanceState: Bundle) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
-    nextProblem
     val helper = new DatabaseOpenHelper(this)
-    try{
-    val db = helper.getReadableDatabase()
-    val c = db.query("test1", Array("name"), null, null, null, null, null);
-    c.moveToFirst();
-    }catch{
-        case e:Exception => println(e.toString)
-  }
+    try {
+      val db = helper.getReadableDatabase()
+      val c = db.query("word", null, null, null, null, null, null);
+      c.moveToFirst();
 
+      val w1 = Word(c.getString(1), c.getString(2))
+      c.moveToNext()
+      val w2 = Word(c.getString(1), c.getString(2))
+      c.moveToNext()
+      val w3 = Word(c.getString(1), c.getString(2))
+
+      wordsdb = List(w1, w2, w3)
+      println(wordsdb)
+
+      c.close
+
+    } catch {
+      case e: Exception => println(e.toString)
+    }
+
+    nextProblem
     answerCheckBtn.setOnClickListener { (v: View) =>
       val radioGroup = $[RadioGroup](R.id.answerRadioGroup)
       val checkedAnswer = $[RadioButton](radioGroup.getCheckedRadioButtonId())
